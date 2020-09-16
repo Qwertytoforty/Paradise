@@ -260,6 +260,7 @@
 /obj/item/ammo_casing/energy/bounce
 	projectile_type = /obj/item/projectile/energy/bounce
 	fire_sound = 'sound/weapons/wave.ogg'
+	e_cost = 125
 	select_name = "bounce"
 
 /obj/item/ammo_casing/energy/mimic

@@ -101,15 +101,17 @@
 	icon_state = "plasma"
 	damage = 15
 	damage_type = BURN
-	ricochets_max = 4
+	ricochets_max = 5
 	ricochet_chance = 100
-	var/life = 50
-//	forcedodge = 1
+	var/life = 100
 	range = 30
 	always_ricochet = TRUE
 
-obj/item/projectile/energy/bounce/Bump(atom/A)//, obj/item/projectile/P)
+obj/item/projectile/energy/bounce/Bump(atom/A)
 	..()
+	life -= 10
+	if(life <= 0)
+		qdel(src)
 	if(!(A in permutated))
 		A.bullet_act(src, def_zone)
 		permutated.Add(A)
