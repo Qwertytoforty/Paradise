@@ -57,6 +57,7 @@
 	var/ricochets = 0
 	var/ricochets_max = 2
 	var/ricochet_chance = 30
+	var/always_ricochet = FALSE //If you want the projectile to always bounce
 
 	var/log_override = FALSE //whether print to admin attack logs or just keep it in the diary
 
@@ -182,7 +183,7 @@
 	if(!yes) //prevents double bumps.
 		return
 
-	if(check_ricochet(A) && check_ricochet_flag(A) && ricochets < ricochets_max)
+	if(((check_ricochet(A) && check_ricochet_flag(A)) || (always_ricochet)) && ricochets < ricochets_max)
 		ricochets++
 		if(A.handle_ricochet(src))
 			on_ricochet(A)

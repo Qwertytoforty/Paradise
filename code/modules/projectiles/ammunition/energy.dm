@@ -256,6 +256,12 @@
 /obj/item/ammo_casing/energy/teleport/newshot()
 	..(teleport_target)
 
+
+/obj/item/ammo_casing/energy/bounce
+	projectile_type = /obj/item/projectile/energy/bounce
+	fire_sound = 'sound/weapons/wave.ogg'
+	select_name = "bounce"
+
 /obj/item/ammo_casing/energy/mimic
 	projectile_type = /obj/item/projectile/mimic
 	fire_sound = 'sound/weapons/bite.ogg'

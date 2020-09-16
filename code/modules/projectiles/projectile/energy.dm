@@ -95,3 +95,23 @@
 	damage = 20
 	damage_type = TOX
 	irradiate = 20
+
+/obj/item/projectile/energy/bounce
+	name = "Magnetic sphere"
+	icon_state = "plasma"
+	damage = 15
+	damage_type = BURN
+	ricochets_max = 4
+	ricochet_chance = 100
+	var/life = 50
+//	forcedodge = 1
+	range = 30
+	always_ricochet = TRUE
+
+obj/item/projectile/energy/bounce/Bump(atom/A)//, obj/item/projectile/P)
+	..()
+	if(!(A in permutated))
+		A.bullet_act(src, def_zone)
+		permutated.Add(A)
+	else
+		permutated.Remove(A)

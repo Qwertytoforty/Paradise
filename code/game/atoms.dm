@@ -832,6 +832,16 @@ GLOBAL_LIST_EMPTY(blood_splatter_icons)
 	return
 
 /atom/proc/handle_ricochet(obj/item/projectile/P)
+	if(P.always_ricochet)
+		var/turf/p_turf = get_turf(P)
+		var/face_direction = get_dir(src, p_turf)
+		var/face_angle = dir2angle(face_direction)
+		var/incidence_s = GET_ANGLE_OF_INCIDENCE(face_angle, (P.Angle + 180))
+		if(abs(incidence_s) > 90 && abs(incidence_s) < 270)
+			return FALSE
+		var/new_angle_s = SIMPLIFY_DEGREES(face_angle + incidence_s)
+		P.setAngle(new_angle_s)
+		return TRUE
 	return
 
 //This proc is called on the location of an atom when the atom is Destroy()'d
