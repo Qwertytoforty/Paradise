@@ -140,6 +140,7 @@
 /obj/item/gun/energy/laser/bounce
 	name = "Magnetic bounce cannon"
 	desc = "A large plasma cannon, that shoot balls of plasma contained in a magnetic sphere, that burns whatever it bounces off of."
+	icon_state = "bounce"
 	ammo_type = list(/obj/item/ammo_casing/energy/bounce)
 
 ////////Laser Tag////////////////////

@@ -97,10 +97,13 @@
 	irradiate = 20
 
 /obj/item/projectile/energy/bounce
-	name = "Magnetic sphere"
+	name = "magnetic plasma"
 	icon_state = "plasma"
 	damage = 15
 	damage_type = BURN
+	hitsound = 'sound/weapons/sear.ogg'
+	hitsound_wall = 'sound/weapons/effects/searwall.ogg'
+	impact_effect_type = /obj/effect/temp_visual/impact_effect/purple_laser
 	ricochets_max = 5
 	ricochet_chance = 100
 	var/life = 100
