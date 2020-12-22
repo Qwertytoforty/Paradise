@@ -314,21 +314,6 @@
 
 	. += _memory_edit_role_enabled(ROLE_ABDUCTOR)
 
-/datum/mind/proc/memory_edit_devil(mob/living/H)
-	. = _memory_edit_header("devil", list("devilagents"))
-	if(src in SSticker.mode.devils)
-		if(!devilinfo)
-			. += "<b>No devilinfo found! Yell at a coder!</b>"
-		else if(!devilinfo.ascendable)
-			. += "<b>DEVIL</b>|<a href='?src=[UID()];devil=ascendable_devil'>Ascendable Devil</a>|sintouched|<a href='?src=[UID()];devil=clear'>no</a>"
-		else
-			. += "<a href='?src=[UID()];devil=devil'>DEVIL</a>|<b>ASCENDABLE DEVIL</b>|sintouched|<a href='?src=[UID()];devil=clear'>no</a>"
-	else if(src in SSticker.mode.sintouched)
-		. += "devil|Ascendable Devil|<b>SINTOUCHED</b>|<a href='?src=[UID()];devil=clear'>no</a>"
-	else
-		. += "<a href='?src=[UID()];devil=devil'>devil</a>|<a href='?src=[UID()];devil=ascendable_devil'>Ascendable Devil</a>|<a href='?src=[UID()];devil=sintouched'>sintouched</a>|<b>NO</b>"
-
-	. += _memory_edit_role_enabled(ROLE_DEVIL)
 
 /datum/mind/proc/memory_edit_eventmisc(mob/living/H)
 	. = _memory_edit_header("event", list())
@@ -475,10 +460,6 @@
 		sections["shadowling"] = memory_edit_shadowling(H)
 		/** Abductors **/
 		sections["abductor"] = memory_edit_abductor(H)
-	/** DEVIL ***/
-	var/static/list/devils_typecache = typecacheof(list(/mob/living/carbon/human, /mob/living/carbon/true_devil, /mob/living/silicon/robot))
-	if(is_type_in_typecache(current, devils_typecache))
-		sections["devil"] = memory_edit_devil(H)
 	sections["eventmisc"] = memory_edit_eventmisc(H)
 	/** TRAITOR ***/
 	sections["traitor"] = memory_edit_traitor()
@@ -1118,76 +1099,6 @@
 				SSticker.mode.update_eventmisc_icons_added(src)
 				message_admins("[key_name_admin(usr)] has eventantag'ed [current].")
 				log_admin("[key_name(usr)] has eventantag'ed [current].")
-	else if(href_list["devil"])
-		switch(href_list["devil"])
-			if("clear")
-				if(src in SSticker.mode.devils)
-					if(istype(current,/mob/living/carbon/true_devil/))
-						to_chat(usr,"<span class='warning'>This cannot be used on true or arch-devils.</span>")
-					else
-						SSticker.mode.devils -= src
-						SSticker.mode.update_devil_icons_removed(src)
-						special_role = null
-						to_chat(current,"<span class='userdanger'>Your infernal link has been severed! You are no longer a devil!</span>")
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/infernal_jaunt)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/click/fireball/hellish)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/click/summon_contract)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/conjure_item/pitchfork)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/conjure_item/pitchfork/greater)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/conjure_item/pitchfork/ascended)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/conjure_item/violin)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/summon_dancefloor)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/sintouch)
-						RemoveSpell(/obj/effect/proc_holder/spell/targeted/sintouch/ascended)
-						message_admins("[key_name_admin(usr)] has de-devil'ed [current].")
-						if(issilicon(current))
-							var/mob/living/silicon/S = current
-							S.laws.clear_sixsixsix_laws()
-						devilinfo = null
-						log_admin("[key_name(usr)] has de-devil'ed [current].")
-				else if(src in SSticker.mode.sintouched)
-					SSticker.mode.sintouched -= src
-					message_admins("[key_name_admin(usr)] has de-sintouch'ed [current].")
-					log_admin("[key_name(usr)] has de-sintouch'ed [current].")
-			if("devil")
-				if(devilinfo)
-					devilinfo.ascendable = FALSE
-					message_admins("[key_name_admin(usr)] has made [current] unable to ascend as a devil.")
-					log_admin("[key_name_admin(usr)] has made [current] unable to ascend as a devil.")
-					return
-				if(!ishuman(current) && !isrobot(current))
-					to_chat(usr, "<span class='warning'>This only works on humans and cyborgs!</span>")
-					return
-				SSticker.mode.devils += src
-				special_role = "devil"
-				SSticker.mode.update_devil_icons_added(src)
-				SSticker.mode.finalize_devil(src, FALSE)
-				SSticker.mode.forge_devil_objectives(src, 2)
-				SSticker.mode.greet_devil(src)
-				message_admins("[key_name_admin(usr)] has devil'ed [current].")
-				log_admin("[key_name(usr)] has devil'ed [current].")
-			if("ascendable_devil")
-				if(devilinfo)
-					devilinfo.ascendable = TRUE
-					message_admins("[key_name_admin(usr)] has made [current] able to ascend as a devil.")
-					log_admin("[key_name_admin(usr)] has made [current] able to ascend as a devil.")
-					return
-				if(!ishuman(current) && !isrobot(current))
-					to_chat(usr, "<span class='warning'>This only works on humans and cyborgs!</span>")
-					return
-				SSticker.mode.devils += src
-				special_role = "devil"
-				SSticker.mode.update_devil_icons_added(src)
-				SSticker.mode.finalize_devil(src, TRUE)
-				SSticker.mode.forge_devil_objectives(src, 2)
-				SSticker.mode.greet_devil(src)
-				message_admins("[key_name_admin(usr)] has devil'ed [current].  The devil has been marked as ascendable.")
-				log_admin("[key_name(usr)] has devil'ed [current]. The devil has been marked as ascendable.")
-			if("sintouched")
-				var/mob/living/carbon/human/H = current
-				H.influenceSin()
-				message_admins("[key_name_admin(usr)] has sintouch'ed [current].")
-				log_admin("[key_name(usr)] has sintouch'ed [current].")
 
 	else if(href_list["traitor"])
 		switch(href_list["traitor"])

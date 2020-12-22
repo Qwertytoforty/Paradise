@@ -24,7 +24,7 @@ emp_act
 			var/list/safe_list = list(/obj/item/projectile/beam/lasertag, /obj/item/projectile/beam/practice)
 			if(is_type_in_list(P, safe_list)) //And it's safe
 				visible_message("<span class='danger'>The [P.name] gets reflected by [src]!</span>", \
-				   "<span class='userdanger'>The [P.name] gets reflected by [src]!</span>")		
+				   "<span class='userdanger'>The [P.name] gets reflected by [src]!</span>")
 				P.reflect_back(src)
 				return -1 // complete projectile permutation
 
@@ -421,7 +421,6 @@ emp_act
 
 	send_item_attack_message(I, user, hit_area)
 
-	var/weakness = check_weakness(I,user)
 
 	if(!I.force)
 		return 0 //item force is zero
@@ -434,7 +433,7 @@ emp_act
 		return 0
 	var/Iforce = I.force //to avoid runtimes on the forcesay checks at the bottom. Some items might delete themselves if you drop them. (stunning yourself, ninja swords)
 
-	apply_damage(I.force * weakness, I.damtype, affecting, armor, sharp = weapon_sharp, used_weapon = I)
+	apply_damage(I.force, I.damtype, affecting, armor, sharp = weapon_sharp, used_weapon = I)
 
 	var/bloody = 0
 	if(I.damtype == BRUTE && I.force && prob(25 + I.force * 2))
