@@ -730,15 +730,15 @@
 /mob/living/proc/get_visible_name()
 	return name
 
-/mob/living/update_gravity(has_gravity)
+/mob/living/update_gravity(mob_has_gravity)
 	if(!SSticker)
 		return
-	if(has_gravity)
+	if(mob_has_gravity)
 		clear_alert("weightless")
 	else
 		throw_alert("weightless", /obj/screen/alert/weightless)
 	if(!flying)
-		float(!has_gravity)
+		float(!mob_has_gravity)
 
 /mob/living/proc/float(on)
 	if(throwing)

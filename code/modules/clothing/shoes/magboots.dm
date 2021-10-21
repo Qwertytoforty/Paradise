@@ -1,3 +1,6 @@
+#define BOOTS_OFF 0
+#define BOOTS_GRAVITY 1
+#define BOOTS_ANTIGRAV 2
 /obj/item/clothing/shoes/magboots
 	name = "magboots"
 	desc = "Magnetic boots, often used during extravehicular activity to ensure the user remains safely attached to the vehicle."
@@ -126,3 +129,82 @@
 			..()
 		else
 			to_chat(user, "<span class='notice'>You poke the gem on [src]. Nothing happens.</span>")
+
+/obj/item/clothing/shoes/gravity
+	name = "Gravitational boots"
+	desc = "Mention experimental, add core stuff."
+	icon_state = "magboots0"
+	origin_tech = "materials=7;magnets=7;engineering=7"
+	actions_types = list(/datum/action/item_action/toggle, /datum/action/item_action/ghop) //In other news, combining magboots with jumpboots is a mess
+	strip_delay = 100
+	put_on_delay = 100
+	resistance_flags = FIRE_PROOF
+	var/cur_index = 1 // Which index the current mode is
+	var/modes = list(BOOTS_GRAVITY, BOOTS_ANTIGRAV)
+	var/boot_state = BOOTS_OFF
+	var/jumpdistance = 5
+	var/jumpspeed = 3
+	var/recharging_rate = 6 SECONDS
+	var/recharging_time = 0 //time until next dash
+
+/obj/item/clothing/shoes/gravity/attack_self(mob/user)
+	cycle(user)
+
+/obj/item/clothing/shoes/gravity/proc/cycle(mob/user)
+	for(var/X in actions)
+		var/datum/action/A = X
+		A.UpdateButtonIcon()
+	if(cur_index > length(modes))
+		boot_state = BOOTS_OFF
+		flags &= ~NOSLIP
+		to_chat(user, "<span class='notice'>You deactivate [src].</span>")
+		STOP_PROCESSING(SSfastprocess, src)
+		cur_index = 1
+		user.update_gravity(user.mob_has_gravity())
+		return
+	if(cur_index == 1)
+		START_PROCESSING(SSfastprocess, src)
+	boot_state = modes[cur_index++]
+	switch(boot_state)
+		if(BOOTS_GRAVITY)
+			to_chat(user, "You activate the gravitational stablization.")
+			flags |= NOSLIP
+		if(BOOTS_ANTIGRAV)
+			flags &= ~NOSLIP
+			to_chat(user, "You switch the boots to anti-gravity mode.")
+	user.update_gravity(user.mob_has_gravity())
+
+
+/obj/item/clothing/shoes/gravity/item_action_slot_check(slot)
+	if(slot == slot_shoes)
+		return TRUE
+
+/obj/item/clothing/shoes/gravity/proc/dash(mob/user, action)
+	if(!isliving(user))
+		return
+
+	if(recharging_time > world.time)
+		to_chat(user, "<span class='warning'>The boot's internal propulsion needs to recharge still!</span>")
+		return
+
+	var/atom/target = get_edge_target_turf(user, user.dir) //gets the user's direction
+
+	if(user.throw_at(target, jumpdistance, jumpspeed, spin = FALSE, diagonals_first = TRUE))
+		playsound(src, 'sound/effects/stealthoff.ogg', 50, 1, 1)
+		user.visible_message("<span class='warning'>[usr] dashes forward into the air!</span>")
+		recharging_time = world.time + recharging_rate
+	else
+		to_chat(user, "<span class='warning'>Something prevents you from dashing forward!</span>")
+
+/obj/item/clothing/shoes/gravity/negates_gravity()
+	return flags & NOSLIP
+
+/obj/item/clothing/shoes/gravity/ignores_gravity()
+	if(boot_state == BOOTS_ANTIGRAV)
+		message_admins("THIS IS WORKING")
+		return TRUE
+
+
+#undef BOOTS_OFF
+#undef BOOTS_GRAVITY
+#undef BOOTS_ANTIGRAV

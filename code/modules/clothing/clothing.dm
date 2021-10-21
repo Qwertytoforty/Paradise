@@ -488,6 +488,9 @@ BLIND     // can't see anything
 /obj/item/proc/negates_gravity()
 	return 0
 
+/obj/item/proc/ignores_gravity()
+	return 0
+
 //Suit
 /obj/item/clothing/suit
 	name = "suit"

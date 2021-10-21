@@ -353,6 +353,9 @@
 /mob/proc/mob_negates_gravity()
 	return 0
 
+/mob/proc/mob_ignores_gravity()
+	return 0
+
 /mob/proc/Move_Pulled(atom/A)
 	if(!canmove || restrained() || !pulling)
 		return
