@@ -139,13 +139,92 @@
 	strip_delay = 100
 	put_on_delay = 100
 	resistance_flags = FIRE_PROOF
+	var/datum/martial_art/grav_stomp/style = new //Only works with core and cell installed.
 	var/cur_index = 1 // Which index the current mode is
 	var/modes = list(BOOTS_GRAVITY, BOOTS_ANTIGRAV)
 	var/boot_state = BOOTS_OFF
 	var/jumpdistance = 5
 	var/jumpspeed = 3
 	var/recharging_rate = 6 SECONDS
-	var/recharging_time = 0 //time until next dash
+	var/recharging_time = 0 // Time until next dash
+	var/dash_cost = 1000 // Cost to dash.
+	var/power_consumption_rate = 60 // How much power is used by the boots each cycle in antigrav mode. "Normal" magboots function uses half charge.
+	var/obj/item/assembly/signaler/anomaly/grav/core = null
+	var/obj/item/stock_parts/cell/cell = null
+
+/obj/item/clothing/shoes/gravity/Destroy()
+	QDEL_NULL(cell)
+	QDEL_NULL(core)
+	return ..()
+
+/obj/item/clothing/shoes/gravity/examine(mob/user)
+	. = ..()
+	if(core && cell)
+		. += "<span class='notice'>[src] is fully operational!</span>"
+		. += "<span class='notice'>The boots are [round(cell.percent())]% charged.</span>"
+	else if(core)
+		. += "<span class='warning'>It has a gravitational anomaly core installed, but no power cell installed.</span>"
+	else if(cell)
+		. += "<span class='warning'>It has a power installed, but no gravitational anomaly core installed.</span>"
+	else
+		. += "<span class='warning'>It is missing a gravitational anomaly core and a power cell.</span>"
+
+/obj/item/clothing/shoes/gravity/process()
+	if(cell) //There should be a cell here, but safety first
+		if(cell.charge <= power_consumption_rate * 5)
+			if(istype(loc, /mob/living/carbon/human))
+				var/mob/living/carbon/human/user = loc
+				to_chat(user, "<span class='warning'>[src] has ran out of charge, and turned off!</span>")
+				disable(user)
+		else if(boot_state == BOOTS_ANTIGRAV)
+			cell.use(power_consumption_rate)
+		else
+			cell.use(power_consumption_rate / 2)
+
+/obj/item/clothing/shoes/gravity/screwdriver_act(mob/living/user, obj/item/I)
+	if(!cell)
+		to_chat(user, "<span class='warning'>There's no cell installed!</span>")
+		return
+
+	if(boot_state != BOOTS_OFF)
+		to_chat(user, "<span class='warning'>Turn off the boots first!</span>")
+		return
+
+	if(!I.use_tool(src, user, volume = I.tool_volume))
+		return
+
+	user.put_in_hands(cell)
+	to_chat(user, "<span class='notice'>You remove [cell] from [src].</span>")
+	cell.update_icon()
+	cell = null
+	update_icon()
+
+/obj/item/clothing/shoes/gravity/attackby(obj/item/I, mob/user, params)
+	if(istype(I, /obj/item/stock_parts/cell))
+		if(cell)
+			to_chat(user, "<span class='warning'>[src] already has a cell!</span>")
+			return
+		if(!user.unEquip(I))
+			return
+		I.forceMove(src)
+		cell = I
+		to_chat(user, "<span class='notice'>You install [I] into [src].</span>")
+		update_icon()
+		return
+
+	if(istype(I, /obj/item/assembly/signaler/anomaly/grav))
+		if(core)
+			to_chat(user, "<span class='notice'>[src] already has a [I]!</span>")
+			return
+		if(!user.drop_item())
+			to_chat(user, "<span class='warning'>[I] is stuck to your hand!</span>")
+			return
+		to_chat(user, "<span class='notice'>You insert [I] into [src], and [src] starts to warm up.</span>")
+		I.forceMove(src)
+		core = I
+		update_icon()
+	else
+		return ..()
 
 /obj/item/clothing/shoes/gravity/attack_self(mob/user)
 	cycle(user)
@@ -154,16 +233,24 @@
 	for(var/X in actions)
 		var/datum/action/A = X
 		A.UpdateButtonIcon()
+	if(cell)
+		if(cell.charge <= power_consumption_rate * 5)
+			to_chat(user, "<span class='notice'>[src] does not have enough charge.</span>")
+			return
+	else
+		to_chat(user, "<span class='warning'>There's no cell installed!</span>")
+		return
+	if(!core)
+		to_chat(user, "<span class='warning'>There's no core installed!</span>")
+		return
+
+
 	if(cur_index > length(modes))
-		boot_state = BOOTS_OFF
-		flags &= ~NOSLIP
 		to_chat(user, "<span class='notice'>You deactivate [src].</span>")
-		STOP_PROCESSING(SSfastprocess, src)
-		cur_index = 1
-		user.update_gravity(user.mob_has_gravity())
+		disable(user)
 		return
 	if(cur_index == 1)
-		START_PROCESSING(SSfastprocess, src)
+		START_PROCESSING(SSobj, src)
 	boot_state = modes[cur_index++]
 	switch(boot_state)
 		if(BOOTS_GRAVITY)
@@ -175,6 +262,32 @@
 	user.update_gravity(user.mob_has_gravity())
 
 
+/obj/item/clothing/shoes/gravity/proc/disable(mob/user)
+		boot_state = BOOTS_OFF
+		flags &= ~NOSLIP
+		STOP_PROCESSING(SSobj, src)
+		cur_index = 1
+		user.update_gravity(user.mob_has_gravity())
+
+/obj/item/clothing/shoes/gravity/equipped(mob/user, slot)
+	..()
+	if(!ishuman(user))
+		return
+	if(slot == slot_shoes)
+		var/mob/living/carbon/human/H = user
+		style.teach(H,1)
+
+/obj/item/clothing/shoes/gravity/dropped(mob/user)
+	..()
+	if(!ishuman(user))
+		return
+	var/mob/living/carbon/human/H = user
+	if(H.get_item_by_slot(slot_shoes) == src)
+		style.remove(H)
+		if(boot_state != BOOTS_OFF)
+			to_chat(user, "<span class='notice'>As [src] is removed, it deactivates.</span>")
+			disable(user)
+
 /obj/item/clothing/shoes/gravity/item_action_slot_check(slot)
 	if(slot == slot_shoes)
 		return TRUE
@@ -183,8 +296,20 @@
 	if(!isliving(user))
 		return
 
+	if(cell)
+		if(cell.charge <= dash_cost)
+			to_chat(user, "<span class='warning'>Your boots do not have enough charge to dash!</span>")
+			return
+	else
+		to_chat(user, "<span class='warning'>Your boots do not have a power cell!</span>")
+		return
+
+	if(!core)
+		to_chat(user, "<span class='warning'>There's no core installed!</span>")
+		return
+
 	if(recharging_time > world.time)
-		to_chat(user, "<span class='warning'>The boot's internal propulsion needs to recharge still!</span>")
+		to_chat(user, "<span class='warning'>The boot's gravitational pulse needs to recharge still!</span>")
 		return
 
 	var/atom/target = get_edge_target_turf(user, user.dir) //gets the user's direction
@@ -193,6 +318,7 @@
 		playsound(src, 'sound/effects/stealthoff.ogg', 50, 1, 1)
 		user.visible_message("<span class='warning'>[usr] dashes forward into the air!</span>")
 		recharging_time = world.time + recharging_rate
+		cell.use(dash_cost)
 	else
 		to_chat(user, "<span class='warning'>Something prevents you from dashing forward!</span>")
 
@@ -201,7 +327,6 @@
 
 /obj/item/clothing/shoes/gravity/ignores_gravity()
 	if(boot_state == BOOTS_ANTIGRAV)
-		message_admins("THIS IS WORKING")
 		return TRUE
 
 
