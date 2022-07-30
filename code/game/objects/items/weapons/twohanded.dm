@@ -893,6 +893,7 @@
 	desc = "Cybersun Industries developed these gloves after a grifter fought one of their soldiers, who attached a pyro core to an energy sword, and found it mostly effective."
 	item_state = "pyro"
 	item_color = "pyro" // I will kill washing machines one day
+	icon_state = "pyro"
 	can_be_cut = FALSE
 	actions_types = list(/datum/action/item_action/toggle)
 	var/on_cooldown = FALSE
@@ -945,4 +946,4 @@
 /obj/item/clothing/gloves/color/black/pyro_claws/proc/reboot()
 	on_cooldown = FALSE
 	flags &= ~NODROP
-	atom_say("Internal plasma canisters recharged")
+	atom_say("Internal plasma canisters recharged. Gloves sufficiently cooled")
