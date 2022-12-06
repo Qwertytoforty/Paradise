@@ -560,6 +560,9 @@
 			var/mob/living/carbon/human/H = AM
 			if(HAS_TRAIT(H, TRAIT_FAT))		// is a human and fat?
 				has_fat_guy = 1			// set flag on holder
+			if(!H.mail_destination)
+				continue
+			destinationTag = H.mail_destination
 		if(istype(AM, /obj/structure/bigDelivery) && !hasmob)
 			var/obj/structure/bigDelivery/T = AM
 			destinationTag = T.sortTag
