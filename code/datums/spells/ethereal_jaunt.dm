@@ -133,3 +133,15 @@
 	if(isspaceturf(T) || T.density)
 		return FALSE
 	return TRUE
+
+/obj/effect/dummy/spell_jaunt/blood_cough //hey hal copying your code again
+	name = "sanguine pool"
+	desc = "a pool of living blood."
+	movespeed = 2
+
+/obj/effect/dummy/spell_jaunt/blood_cough/can_move(turf/T)
+	for(var/obj/effect/decal/cleanable/target in T)
+		if(target.can_bloodcrawl_in())
+			return TRUE
+	return FALSE
+

@@ -1,6 +1,6 @@
 //////////////////The Monster
 
-/mob/living/simple_animal/slaughter
+/mob/living/simple_animal/slaughter ///temp comment to keep file open delete afer
 	name = "slaughter demon"
 	real_name = "slaughter demon"
 	desc = "A large, menacing creature covered in armored black scales. You should run."

@@ -2148,6 +2148,7 @@
 #include "code\modules\mob\living\simple_animal\hostile\mining\gutlunch.dm"
 #include "code\modules\mob\living\simple_animal\hostile\mining\hivelord.dm"
 #include "code\modules\mob\living\simple_animal\hostile\mining\mining.dm"
+#include "code\modules\mob\living\simple_animal\hostile\mining\elites\elder_demon.dm"
 #include "code\modules\mob\living\simple_animal\hostile\mining\elites\elite.dm"
 #include "code\modules\mob\living\simple_animal\hostile\mining\elites\goliath_broodmother.dm"
 #include "code\modules\mob\living\simple_animal\hostile\mining\elites\herald.dm"
