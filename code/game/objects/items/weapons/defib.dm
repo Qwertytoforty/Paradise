@@ -378,7 +378,7 @@
 			H.KnockDown(10 SECONDS)
 			playsound(get_turf(src), 'sound/machines/defib_zap.ogg', 50, 1, -1)
 			H.emote("gasp")
-			if((defib.combat && defib.heart_attack) || prob(10) && (defib.combat)) // If the victim is not having a heart attack, and a 10% chance passes, or the defib has heart attack variable to TRUE while being a combat defib, or if another 10% chance passes with combat being TRUE
+			if(defib.combat && defib.heart_attack) //If the defib is combat and has the heart_attack variable set to true, you die.
 				H.set_heartattack(TRUE)
 			SEND_SIGNAL(H, COMSIG_LIVING_MINOR_SHOCK, 100)
 			add_attack_logs(user, M, "Stunned with [src]")
