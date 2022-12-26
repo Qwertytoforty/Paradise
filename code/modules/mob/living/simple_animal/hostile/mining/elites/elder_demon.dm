@@ -70,7 +70,7 @@
 
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/Initialize(mapload)
 	. = ..()
-	var/obj/effect/proc_holder/spell/bloodcrawl/bloodspell = new
+	var/obj/effect/proc_holder/spell/ethereal_jaunt/blood_cough/bloodspell = new
 	AddSpell(bloodspell)
 
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/OpenFire()

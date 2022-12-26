@@ -81,8 +81,9 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 /obj/effect/decal/cleanable/blood/proc/blood_spike(mob/living/owner, number)
 	if(number == last_blood_spike)
 		return
-	last_blood_spike = number
 	var/turf/T = get_turf(src)
+	for(var/obj/effect/decal/cleanable/B in T)
+		last_blood_spike = number
 	var/obj/effect/temp_visual/blood_spike/spike = new /obj/effect/temp_visual/blood_spike(T)
 	spike.color = basecolor
 	for(var/mob/living/M in T)
@@ -94,7 +95,9 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 		M.apply_damage(40, BRUTE, BODY_ZONE_CHEST)
 		M.visible_message("<span class='warning'><b>[M] gets impaled by a spike of living blood!</b></span>")
 		owner.adjustBruteLoss(-40)
-	sleep(1)
+	addtimer(CALLBACK(src, PROC_REF(blood_spike_spread), owner, number), 0.1 SECONDS)
+
+/obj/effect/decal/cleanable/blood/proc/blood_spike_spread(mob/living/owner, number)
 	for(var/obj/effect/decal/cleanable/blood/B in circlerange(src, 1))
 		if(B == src)
 			continue
