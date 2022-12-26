@@ -78,26 +78,29 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 /obj/effect/decal/cleanable/blood/can_bloodcrawl_in()
 	return TRUE
 
-/obj/effect/decal/cleanable/blood/proc/blood_spike(mob/living/owner, number)
-	if(number == last_blood_spike)
+/obj/effect/decal/cleanable/blood/proc/blood_spike(mob/living/owner, number, loops)
+	if(number == last_blood_spike || loops >= 50)
 		return
+	loops++ //In case someone gets 2 demons and fires off 2 blood_spikes at once
 	var/turf/T = get_turf(src)
 	for(var/obj/effect/decal/cleanable/B in T)
 		last_blood_spike = number
 	var/obj/effect/temp_visual/blood_spike/spike = new /obj/effect/temp_visual/blood_spike(T)
 	spike.color = basecolor
 	for(var/mob/living/M in T)
-		if(M == owner)
+		if(M.faction_check_mob(owner))
 			continue
 		if(M.stat == DEAD)
 			continue
 		playsound(M, 'sound/misc/demon_attack1.ogg', 50, TRUE)
-		M.apply_damage(40, BRUTE, BODY_ZONE_CHEST)
+		M.apply_damage(30, BRUTE, BODY_ZONE_CHEST)
 		M.visible_message("<span class='warning'><b>[M] gets impaled by a spike of living blood!</b></span>")
 		owner.adjustBruteLoss(-40)
-	addtimer(CALLBACK(src, PROC_REF(blood_spike_spread), owner, number), 0.1 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(blood_spike_spread), owner, number, loops), 0.1 SECONDS)
 
-/obj/effect/decal/cleanable/blood/proc/blood_spike_spread(mob/living/owner, number)
+/obj/effect/decal/cleanable/blood/proc/blood_spike_spread(mob/living/owner, number, loops)
+	for(var/obj/effect/decal/cleanable/B in loc)
+		last_blood_spike = number //We need do this twice, to ensure we catch blood from the mobs bleeding from spikes
 	for(var/obj/effect/decal/cleanable/blood/B in circlerange(src, 1))
 		if(B == src)
 			continue

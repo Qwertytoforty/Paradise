@@ -150,7 +150,7 @@
 /obj/effect/dummy/spell_jaunt/blood_cough //hey hal copying your code again
 	name = "sickly pool of blood"
 	desc = "a pool of living blood."
-	movespeed = 2
+	movespeed = 1
 	invisibility = INVISIBILITY_HIDDEN_RUNES //sure cult gets to see this with cult magic or something idk
 	icon_state = "bloodsparkles"
 

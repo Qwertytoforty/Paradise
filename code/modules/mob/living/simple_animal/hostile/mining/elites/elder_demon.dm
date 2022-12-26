@@ -36,12 +36,13 @@
 	attacktext = "wildly tears into"
 	attack_sound = 'sound/misc/demon_attack1.ogg'
 	throw_message = "merely dinks off of the"
+	see_invisible = SEE_INVISIBLE_HIDDEN_RUNES
 	ranged_cooldown_time = 20
-	speed = 0.5 //test this shit
+	speed = 0.5
 	move_to_delay = 3
 	mouse_opacity = MOUSE_OPACITY_ICON
 	death_sound = 'sound/misc/demon_dies.ogg'
-	deathmessage = "'s lights flicker, before its top part falls down." //change
+	deathmessage = "collapses, out of blood to fuel it's lifeforce" //change
 	loot_drop = /obj/item/organ/internal/lungs/elder_demon
 
 	attack_action_types = list(/datum/action/innate/elite_attack/blood_spikes,
@@ -84,19 +85,81 @@
 				temp()
 		return
 
+/mob/living/simple_animal/hostile/asteroid/elite/elder_demon/AttackingTarget()
+	. = ..()
+	if(. && isliving(target))
+		var/mob/living/M = target
+		if(M.stat == DEAD)
+			adjustBruteLoss(-35)
+
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/Moved(atom/OldLoc, Dir, Forced = FALSE)
 	if(Dir && !Forced)
 		new /obj/effect/decal/cleanable/blood/bubblegum(loc)
 	return ..()
 
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/proc/blood_spikes()
-	for(var/obj/effect/decal/cleanable/blood/B in (get_turf(src)))
+	for(var/obj/effect/decal/cleanable/blood/B in (get_turf(src))) // need sound
 		B.blood_spike(src, rand(1, 1000))
-		ranged_cooldown = world.time + 8 SECONDS * revive_multiplier()
+		ranged_cooldown = world.time + 6 SECONDS * revive_multiplier()
 		return
 
+
+/mob/living/simple_animal/hostile/asteroid/elite/elder_demon/proc/shoot_projectile(target)
+	playsound(get_turf(src), 'sound/magic/wand_teleport.ogg', 20, TRUE)
+	adjustBruteLoss(15)
+	var/turf/startloc = get_turf(src)
+	var/obj/item/projectile/H = new /obj/item/projectile/elder_demon(startloc)
+	if(!isturf(target))
+		target = get_turf(target)
+	H.preparePixelProjectile(target, target, src)
+	H.firer = src
+	H.firer_source_atom = src
+	if(target)
+		H.original = target
+	var/angle_to_target = get_angle(src, target)
+	H.fire(angle_to_target)
+
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/proc/blood_bolts(target)
-	return
+	ranged_cooldown = world.time + 4 SECONDS * revive_multiplier()
+	shoot_projectile(target)
+	addtimer(CALLBACK(src, PROC_REF(shoot_projectile), target), 0.3 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(shoot_projectile), target), 0.6 SECONDS)
+
+/obj/item/projectile/elder_demon
+	name = "cursed blood"
+	icon_state = "blood_bolt"
+	flag = BULLET
+	damage = 15
+	armour_penetration_percentage = 50
+	impact_effect_type = /obj/effect/temp_visual/dir_setting/bloodsplatter
+	hitsound = 'sound/effects/splat.ogg'
+
+/obj/item/projectile/elder_demon/Range()
+	..()
+	if(prob(33))
+		new /obj/effect/decal/cleanable/blood/bubblegum(loc)
+
+/obj/item/projectile/elder_demon/prehit(atom/target)
+	if(ismob(target) && ismob(firer))
+		var/mob/living/mob_target = target
+		if(mob_target.faction_check_mob(firer))
+			nodamage = TRUE
+			damage = 0
+			return
+
+/obj/item/projectile/elder_demon/on_hit(atom/target, blocked = FALSE)
+	. = ..()
+	if(isliving(target) && damage)
+		var/mob/living/L = target
+		if(!isliving(firer))
+			return
+		if(L.stat == DEAD)
+			return
+		var/mob/living/F = firer
+		F.adjustBruteLoss(-30)
+		for(var/turf/T in range (src, 1))
+			new /obj/effect/decal/cleanable/blood/bubblegum(T)
+
 
 /mob/living/simple_animal/hostile/asteroid/elite/elder_demon/proc/temp()
 	return
@@ -111,7 +174,7 @@
 /obj/item/organ/internal/lungs/elder_demon/prepare_eat()
 	return // Just so people don't accidentally waste it
 
-/obj/item/organ/internal/lungs/elder_demon/attack_self(mob/living/user)
+/obj/item/organ/internal/lungs/elder_demon/attack_self(mob/living/user) // TODO BLOCK VAMPIRES FROM THIS
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
 		if(NO_BLOOD in H.dna.species.species_traits)
@@ -177,7 +240,7 @@
 	heat_level_3_damage = L.heat_level_3_damage
 	heat_damage_types = L.heat_damage_types
 
-/obj/item/organ/internal/lungs/elder_demon/insert(mob/living/carbon/M, special = 0)
+/obj/item/organ/internal/lungs/elder_demon/insert(mob/living/carbon/M, special = 0) // TODO BLOCK VAMPIRES FROM THIS
 	. = ..()
 	if(M.mind && ishuman(M))
 		var/mob/living/carbon/human/H = M
