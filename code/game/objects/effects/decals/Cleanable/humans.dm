@@ -82,6 +82,8 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 	if(number == last_blood_spike || loops >= 50)
 		return
 	loops++ //In case someone gets 2 demons and fires off 2 blood_spikes at once
+	if(prob(20)) //Don't want the sound to play too much, especially in a super bloody arena.
+		playsound(get_turf(src), 'sound/effects/splat.ogg', 20, TRUE)
 	var/turf/T = get_turf(src)
 	for(var/obj/effect/decal/cleanable/B in T)
 		last_blood_spike = number
