@@ -21,6 +21,7 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 	var/amount = 5
 	var/dry_timer = 0
 	var/off_floor = FALSE
+	var/last_blood_spike = 0
 
 
 /obj/effect/decal/cleanable/blood/replace_decal(obj/effect/decal/cleanable/blood/C)
@@ -76,6 +77,28 @@ GLOBAL_LIST_EMPTY(splatter_cache)
 
 /obj/effect/decal/cleanable/blood/can_bloodcrawl_in()
 	return TRUE
+
+/obj/effect/decal/cleanable/blood/proc/blood_spike(mob/living/owner, number)
+	if(number == last_blood_spike)
+		return
+	last_blood_spike = number
+	var/turf/T = get_turf(src)
+	var/obj/effect/temp_visual/blood_spike/spike = new /obj/effect/temp_visual/blood_spike(T)
+	spike.color = basecolor
+	for(var/mob/living/M in T)
+		if(M == owner)
+			continue
+		if(M.stat == DEAD)
+			continue
+		playsound(M, 'sound/misc/demon_attack1.ogg', 50, TRUE)
+		M.apply_damage(40, BRUTE, BODY_ZONE_CHEST)
+		M.visible_message("<span class='warning'><b>[M] gets impaled by a spike of living blood!</b></span>")
+		owner.adjustBruteLoss(-40)
+	sleep(1)
+	for(var/obj/effect/decal/cleanable/blood/B in circlerange(src, 1))
+		if(B == src)
+			continue
+		B.blood_spike(owner, number)
 
 /obj/effect/decal/cleanable/blood/splatter
 	random_icon_states = list("mgibbl1", "mgibbl2", "mgibbl3", "mgibbl4", "mgibbl5")

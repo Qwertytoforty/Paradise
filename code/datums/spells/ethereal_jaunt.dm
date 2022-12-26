@@ -11,6 +11,7 @@
 	nonabstract_req = TRUE
 	centcom_cancast = FALSE //Prevent people from getting to centcom
 	var/sound1 = 'sound/magic/ethereal_enter.ogg'
+	var/sound2 = 'sound/magic/ethereal_exit.ogg'
 	var/jaunt_duration = 50 //in deciseconds
 	var/jaunt_in_time = 5
 	var/jaunt_in_type = /obj/effect/temp_visual/wizard
@@ -24,7 +25,8 @@
 	return new /datum/spell_targeting/self
 
 /obj/effect/proc_holder/spell/ethereal_jaunt/cast(list/targets, mob/user = usr) //magnets, so mostly hardcoded
-	playsound(get_turf(user), sound1, 50, 1, -1)
+	if(sound1)
+		playsound(get_turf(user), sound1, 50, 1, -1)
 	for(var/mob/living/target in targets)
 		if(!target.can_safely_leave_loc()) // No more brainmobs hopping out of their brains
 			to_chat(target, "<span class='warning'>You are somehow too bound to your current location to abandon it.</span>")
@@ -35,7 +37,8 @@
 	target.notransform = TRUE
 	var/turf/mobloc = get_turf(target)
 	var/obj/effect/dummy/spell_jaunt/holder = new jaunt_type_path(mobloc)
-	new jaunt_out_type(mobloc, target.dir)
+	if(jaunt_out_type)
+		new jaunt_out_type(mobloc, target.dir)
 	target.ExtinguishMob()
 	target.forceMove(holder)
 	target.reset_perspective(holder)
@@ -53,9 +56,12 @@
 		jaunt_steam(mobloc)
 	ADD_TRAIT(target, TRAIT_IMMOBILIZED, "jaunt")
 	holder.reappearing = 1
-	playsound(get_turf(target), 'sound/magic/ethereal_exit.ogg', 50, 1, -1)
+	if(sound2)
+		playsound(get_turf(target), sound2, 50, 1, -1)
 	sleep(jaunt_in_time * 4)
-	new jaunt_in_type(mobloc, holder.dir)
+	if(jaunt_in_type)
+		new jaunt_in_type(mobloc, holder.dir)
+	jaunt_warning(target)
 	target.setDir(holder.dir)
 	sleep(jaunt_in_time)
 	qdel(holder)
@@ -73,6 +79,13 @@
 					break
 		REMOVE_TRAIT(target, TRAIT_IMMOBILIZED, "jaunt")
 		target.remove_CC()
+		exit_jaunt(target)
+
+/obj/effect/proc_holder/spell/ethereal_jaunt/proc/exit_jaunt(mob/living/target)
+	return
+
+/obj/effect/proc_holder/spell/ethereal_jaunt/proc/jaunt_warning(mob/living/target)
+	return
 
 /obj/effect/proc_holder/spell/ethereal_jaunt/proc/jaunt_steam(mobloc)
 	var/datum/effect_system/steam_spread/steam = new /datum/effect_system/steam_spread()
@@ -135,9 +148,11 @@
 	return TRUE
 
 /obj/effect/dummy/spell_jaunt/blood_cough //hey hal copying your code again
-	name = "sanguine pool"
+	name = "sickly pool of blood"
 	desc = "a pool of living blood."
 	movespeed = 2
+	invisibility = INVISIBILITY_HIDDEN_RUNES //sure cult gets to see this with cult magic or something idk
+	icon_state = "bloodsparkles"
 
 /obj/effect/dummy/spell_jaunt/blood_cough/can_move(turf/T)
 	for(var/obj/effect/decal/cleanable/target in T)

@@ -278,7 +278,7 @@
 
 	if(bleedsuppress)
 		msg += "[p_they(TRUE)] [p_are()] bandaged with something.\n"
-	else if(bleed_rate)
+	else if(bleed_rate || istype(get_organ_slot("lungs"), /obj/item/organ/internal/lungs/elder_demon))
 		msg += "<B>[p_they(TRUE)] [p_are()] bleeding!</B>\n"
 
 	if(reagents.has_reagent("teslium"))
