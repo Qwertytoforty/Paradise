@@ -237,6 +237,8 @@
 
 /obj/item/tank/proc/check_status()
 	//Handle exploding, leaking, and rupturing of the tank
+	if(timestopped)
+		return
 
 	if(!air_contents)
 		return 0

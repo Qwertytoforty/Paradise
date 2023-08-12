@@ -374,3 +374,11 @@
 	name = "reactive armor power cell"
 	desc = "A cell used to power reactive armors."
 	maxcharge = 2400
+
+/obj/item/stock_parts/cell/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"charge",
+		"rigged")
+
+	reset_vars_after_duration(resettable_vars, duration)

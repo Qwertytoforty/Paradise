@@ -149,3 +149,6 @@
 /atom/movable/lighting_object/forceMove(atom/destination, no_tp = FALSE, harderforce = FALSE)
 	if(harderforce)
 		. = ..()
+
+/atom/movable/lighting_object/send_to_future(var/duration)
+	return

@@ -64,6 +64,8 @@
 	if(client.click_intercept)
 		client.click_intercept.InterceptClickOn(src, params, A)
 		return
+	if(timestopped)
+		return //Time is stopped, why are you clicking on stuff?
 
 	if(next_click > world.time)
 		return

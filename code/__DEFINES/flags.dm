@@ -80,6 +80,8 @@
 #define CRITICAL_ATOM_2			(1<<18)
 /// Use this flag for items that can block randomly
 #define RANDOM_BLOCKER_2		(1<<19)
+/// Use this flag for things that should be immune to time effects
+#define TIMELESS_2				(1<<20)
 
 //Reagent flags
 #define REAGENT_NOREACT			1

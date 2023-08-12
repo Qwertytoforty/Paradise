@@ -2019,6 +2019,52 @@ Eyes need to have significantly high darksight to shine unless the mob has the X
 		return
 	..()
 
+
+/mob/living/carbon/human/send_to_past(var/duration) //fuck me this will suck ass.
+	..()
+	var/static/list/resettable_vars = list(
+		"lip_style",
+		"wear_suit",
+		"w_uniform",
+		"shoes",
+		"belt",
+		"gloves",
+		"glasses",
+		"head",
+		"ears",
+		"wear_id",
+		"r_store",
+		"l_store",
+		"s_store",
+		"l_ear",
+		"r_ear",
+		"said_last_words",
+		"failed_last_breath",
+		"last_dam",
+		"bad_external_organs",
+		"xylophone",
+		"meatleft",
+		"check_mutations",
+		"lastFart",
+		"lastDab",
+		"lastAnemia",
+		"last_shush",
+		"last_emote_sound",
+		"decapitated",
+		"organs",
+		"organs_by_name",
+		"internal_organs",
+		"internal_organs_by_name")
+
+	reset_vars_after_duration(resettable_vars, duration)
+
+	for(var/obj/item/organ/internal/O in internal_organs)
+		O.send_to_past(duration)
+	for(var/obj/item/organ/external/O in bodyparts)
+		O.send_to_past(duration)
+
+	updatehealth()
+
 /**
   * Helper to get the mobs runechat colour span
   *

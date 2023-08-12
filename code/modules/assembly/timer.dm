@@ -126,3 +126,12 @@
 
 	if(usr)
 		attack_self(usr)
+
+
+/obj/item/assembly/timer/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"timing",
+		"time")
+
+	reset_vars_after_duration(resettable_vars, duration)

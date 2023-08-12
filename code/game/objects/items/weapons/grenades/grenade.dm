@@ -114,3 +114,10 @@
 	///We need to clear the walk_to on destroy to allow a grenade which uses walk_to or related to properly GC
 	walk_to(src, 0)
 	return ..()
+
+/obj/item/grenade/send_to_past(duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"active")
+
+	reset_vars_after_duration(resettable_vars, duration)

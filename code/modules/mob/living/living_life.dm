@@ -1,6 +1,8 @@
 /mob/living/proc/Life(seconds, times_fired)
 	set waitfor = FALSE
 	set invisibility = 0
+	if(timestopped)
+		return
 
 	if(flying && !floating) //TODO: Better floating
 		float(TRUE)

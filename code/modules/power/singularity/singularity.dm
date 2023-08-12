@@ -53,6 +53,8 @@
 	return ..()
 
 /obj/singularity/Move(atom/newloc, direct)
+	if(timestopped)
+		return
 	if(current_size >= STAGE_FIVE || check_turfs_in(direct))
 		last_failed_movement = 0//Reset this because we moved
 		return ..()
@@ -421,7 +423,7 @@
 		M.Stun(6 SECONDS)
 		M.visible_message("<span class='danger'>[M] stares blankly at [src]!</span>", \
 						"<span class='userdanger'>You look directly into [src] and feel weak.</span>")
-	return 
+	return
 
 
 /obj/singularity/proc/emp_area()

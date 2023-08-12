@@ -275,3 +275,17 @@
 	if(M.healthdoll)
 		M.healthdoll.cached_healthdoll_overlays.Cut()
 	M.updatehealth("fakedeath reagent end")
+
+/datum/reagent/send_to_past(var/duration)
+	var/static/list/resettable_vars = list(
+		"being_sent_to_past",
+		"name",
+		"id",
+		"description",
+		"holder",
+		"reagent_state",
+		"data",
+		"volume",
+		"tick")
+
+	reset_vars_after_duration(resettable_vars, duration, TRUE)

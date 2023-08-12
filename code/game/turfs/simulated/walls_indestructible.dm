@@ -2,6 +2,7 @@
 	name = "wall"
 	desc = "Effectively impervious to conventional methods of destruction."
 	explosion_block = 50
+	flags_2 = RAD_PROTECT_CONTENTS_2 | RAD_NO_CONTAMINATE_2 | TIMELESS_2
 
 /turf/simulated/wall/indestructible/dismantle_wall(devastated = 0, explode = 0)
 	return

@@ -969,3 +969,18 @@
 	if(my_atom && my_atom.reagents == src)
 		my_atom.reagents = null
 	my_atom = null
+
+/datum/reagents/send_to_past(var/duration)
+	var/static/list/resettable_vars = list(
+		"being_sent_to_past",
+		"reagent_list",
+		"total_volume",
+		"maximum_volume",
+		"my_atom",
+		"chem_temp")
+
+	reset_vars_after_duration(resettable_vars, duration, TRUE)
+
+	for(var/y in reagent_list)
+		var/datum/reagent/R = y
+		R.send_to_past(duration)

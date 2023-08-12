@@ -10,6 +10,7 @@
 	icon_state = "eye"
 	alpha = 127
 	invisibility = SEE_INVISIBLE_OBSERVER
+	flags_2 = TIMELESS_2
 
 	var/list/visibleCameraChunks = list()
 	var/mob/living/silicon/ai/ai = null

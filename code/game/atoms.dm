@@ -80,6 +80,8 @@
 	var/smoothing_junction = null //This starts as null for us to know when it's first set, but after that it will hold a 8-bit mask ranging from 0 to 255.
 	///Used for changing icon states for different base sprites.
 	var/base_icon_state
+	///Is the atom frozen in time, and thus should not be doing anything
+	var/timestopped = FALSE
 
 /atom/New(loc, ...)
 	SHOULD_CALL_PARENT(TRUE)

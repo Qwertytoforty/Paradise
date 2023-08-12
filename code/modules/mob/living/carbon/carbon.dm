@@ -1332,3 +1332,14 @@ so that different stomachs can handle things in different ways VB*/
 		if(wear_suit.flags_inv & HIDEGLOVES)
 			clean_hands = FALSE
 	..(clean_hands, clean_mask, clean_feet)
+
+/mob/living/carbon/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"gender",
+		"life_tick",
+		"handcuffed",
+		"legcuffed",
+		"pulse")
+
+	reset_vars_after_duration(resettable_vars, duration)

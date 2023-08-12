@@ -299,8 +299,12 @@ SUBSYSTEM_DEF(garbage)
 		I = SSgarbage.items[D.type] = new /datum/qdel_item(D.type)
 	I.qdels++
 
-
 	if(isnull(D.gc_destroyed))
+		if(D.being_sent_to_past() && !force) //I am sorry
+			if(ismovable(D))
+				var/atom/movable/AM = D
+				AM.invisibility = 101 // We don't want items that should be "gone" to be visible
+			return
 		if(SEND_SIGNAL(D, COMSIG_PARENT_PREQDELETED, force)) // Give the components a chance to prevent their parent from being deleted
 			return
 		D.gc_destroyed = GC_CURRENTLY_BEING_QDELETED

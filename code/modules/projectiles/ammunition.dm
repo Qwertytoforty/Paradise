@@ -104,6 +104,13 @@
 		return TRUE
 	return ..()
 
+/obj/item/ammo_casing/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"BB")
+
+	reset_vars_after_duration(resettable_vars, duration)
+
 #define AMMO_MULTI_SPRITE_STEP_NONE null
 #define AMMO_MULTI_SPRITE_STEP_ON_OFF -1
 
@@ -265,3 +272,10 @@
 	for(var/obj/item/ammo in stored_ammo)
 		ammo.forceMove(turf_mag)
 		stored_ammo -= ammo
+
+/obj/item/ammo_storage/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"stored_ammo")
+
+	reset_vars_after_duration(resettable_vars, duration)

@@ -539,6 +539,8 @@
 	return
 
 /mob/living/Move(atom/newloc, direct, movetime)
+	if(timestopped)
+		return
 	if(buckled && buckled.loc != newloc) //not updating position
 		if(!buckled.anchored)
 			return buckled.Move(newloc, direct)
@@ -1137,3 +1139,24 @@
 /mob/living/throw_at(atom/target, range, speed, mob/thrower, spin, diagonals_first, datum/callback/callback, force, dodgeable)
 	stop_pulling()
 	return ..()
+
+/mob/living/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"maxHealth",
+		"health",
+		"bruteloss",
+		"oxyloss",
+		"toxloss",
+		"fireloss",
+		"cloneloss",
+		"halloss",
+		"hallucination",
+		"meat_taken",
+		"on_fire",
+		"fire_stacks",
+		"specialsauce", //?
+		"silent",
+		"is_ventcrawling")
+
+	reset_vars_after_duration(resettable_vars, duration)

@@ -114,6 +114,8 @@
 			return TRUE
 	return FALSE
 
+
+
 /proc/isNonCrewAntag(A)
 	if(!isAntag(A))
 		return 0

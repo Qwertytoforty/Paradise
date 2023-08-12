@@ -83,6 +83,8 @@
 
 
 /obj/item/assembly_holder/HasProximity(atom/movable/AM)
+	if(timestopped)
+		return
 	if(a_left)
 		a_left.HasProximity(AM)
 	if(a_right)

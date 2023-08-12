@@ -624,3 +624,147 @@
 /// called when a mob gets shoved into an items turf. false means the mob will be shoved backwards normally, true means the mob will not be moved by the disarm proc.
 /atom/movable/proc/shove_impact(mob/living/target, mob/living/attacker)
 	return FALSE
+
+/atom/movable/proc/send_to_future(duration)	//don't override this, only call it
+	spawn()
+		actual_send_to_future(duration)
+
+/atom/movable/proc/actual_send_to_future(duration)	//don't call this, only override it
+	var/init_invisibility = invisibility
+	var/init_invuln = FALSE
+	var/init_density = density
+	var/init_anchored = anchored
+	var/init_timeless = flags_2 & TIMELESS_2
+
+	invisibility = INVISIBILITY_MAXIMUM
+	if(isobj(src))
+		var/obj/O = src
+		init_invuln = O.resistance_flags & INDESTRUCTIBLE
+		O.resistance_flags |= INDESTRUCTIBLE
+	density = FALSE
+	anchored = 1
+	flags_2 |= TIMELESS_2
+	timestopped = TRUE
+
+	for(var/atom/movable/AM in contents)
+		AM.send_to_future(duration)
+
+	sleep(duration)//callback this
+	timestopped = FALSE
+	if(!init_invuln && isobj(src))
+		var/obj/O = src
+		O.resistance_flags &= ~INDESTRUCTIBLE
+	density = init_density
+	anchored = init_anchored
+	if(!init_timeless)
+		flags_2 &= ~TIMELESS_2
+	invisibility = init_invisibility
+
+/datum/proc/send_to_past(duration)
+	return
+
+/datum/var/being_sent_to_past
+
+/atom/movable/send_to_past(duration)
+	var/current_loc = loc
+	var/static/list/resettable_vars = list(
+		"being_sent_to_past",
+		"invisibility",
+		"alpha",
+		"name",
+		"desc",
+		"dir",
+		"pixel_x",
+		"pixel_y",
+		"layer",
+		"transform",
+		"density",
+		"last_move",
+		"anchored",
+		"move_speed",
+		"throw_speed",
+		"throw_range",
+		"flags",
+		"flags_2")
+	var/list/stored_vars = list()
+	for(var/x in resettable_vars)
+		if(istype(vars[x], /list))
+			var/list/L = vars[x]
+			stored_vars[x] = L.Copy()
+			continue
+		stored_vars[x] = vars[x]
+
+	for(var/atom/movable/AM in contents)
+		AM.send_to_past(duration)
+	if(reagents)
+		reagents.send_to_past(duration)
+
+	being_sent_to_past = TRUE
+	spawn(duration)///callbackthis
+		if(istype(loc, /mob))
+			var/mob/M = loc
+			M.drop_item()
+		forceMove(current_loc)
+		for(var/x in stored_vars)
+			if(istype(stored_vars[x], /list))
+				var/list/L = stored_vars[x]
+				if(!L)
+					vars[x] = null
+					continue
+				else if(!L.len)
+					vars[x] = list()
+					continue
+			vars[x] = stored_vars[x]
+		update_icon()
+
+/datum/proc/reset_vars_after_duration(list/to_reset, duration, sending_to_past = FALSE)
+	if(!to_reset || !to_reset.len || !duration)
+		return
+	if(sending_to_past)
+		to_reset.Add("being_sent_to_past")
+	var/list/stored_vars = list()
+	for(var/x in to_reset)
+		if(istype(vars[x], /list))
+			var/list/L = vars[x]
+			stored_vars[x] = L.Copy()
+			continue
+		stored_vars[x] = vars[x]
+
+	if(sending_to_past)
+		being_sent_to_past = TRUE
+	spawn(duration)///callback this holy fuck where are the callbacks
+		for(var/x in stored_vars)
+			if(istype(stored_vars[x], /list))
+				var/list/L = stored_vars[x]
+				if(!L)
+					vars[x] = null
+					continue
+				else if(!L.len)
+					vars[x] = list()
+					continue
+			vars[x] = stored_vars[x]
+
+/datum/proc/being_sent_to_past()
+	if(being_sent_to_past)
+		return TRUE
+
+/atom/movable/being_sent_to_past()
+	if(..())
+		if(!isturf(src))
+			invisibility = 101
+			if(isobj(src))
+				var/obj/O = src
+				O.resistance_flags = INDESTRUCTIBLE
+			density = 0
+			anchored = 1
+			flags_2 |= TIMELESS_2
+			if(loc)
+				if(iscarbon(loc))
+					var/mob/living/carbon/C = loc
+					C.drop_item()
+			forceMove(null)
+		return TRUE
+
+/atom/proc/toggle_timeless()
+	flags_2 ^= TIMELESS_2
+	return flags & TIMELESS_2

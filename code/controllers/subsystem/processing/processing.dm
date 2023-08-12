@@ -29,6 +29,10 @@ SUBSYSTEM_DEF(processing)
 	while(current_run.len)
 		var/datum/thing = current_run[current_run.len]
 		current_run.len--
+		if(ismovable(thing))
+			var/atom/movable/AM = thing
+			if(AM.timestopped)
+				continue //no, you can't process
 		if(QDELETED(thing))
 			processing -= thing
 		else if(thing.process(wait) == PROCESS_KILL)

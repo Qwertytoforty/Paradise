@@ -474,7 +474,9 @@
 /obj/effect/timestop/proc/timestop()
 	playsound(get_turf(src), 'sound/magic/timeparadox2.ogg', 100, 1, -1)
 	for(var/i in 1 to duration-1)
-		for(var/A in orange (freezerange, loc))
+		for(var/atom/movable/A in orange (freezerange, loc))
+			if(A.flags_2 & TIMELESS_2)
+				continue
 			if(isliving(A))
 				var/mob/living/M = A
 				if(M in immune)
@@ -485,11 +487,11 @@
 					var/mob/living/simple_animal/hostile/H = M
 					H.AIStatus = AI_OFF
 					H.LoseTarget()
-				stopped_atoms |= M
 			else if(istype(A, /obj/item/projectile))
 				var/obj/item/projectile/P = A
 				P.paused = TRUE
-				stopped_atoms |= P
+			A.timestopped = TRUE
+			stopped_atoms += A
 
 		for(var/mob/living/M in stopped_atoms)
 			if(get_dist(get_turf(M),get_turf(src)) > freezerange) //If they lagged/ran past the timestop somehow, just ignore them
@@ -503,6 +505,10 @@
 
 	for(var/obj/item/projectile/P in stopped_atoms)
 		P.paused = FALSE
+
+	for(var/atom/movable/A in stopped_atoms)
+		timestopped = FALSE
+
 	qdel(src)
 	return
 
@@ -512,6 +518,7 @@
 	if(ishostile(M))
 		var/mob/living/simple_animal/hostile/H = M
 		H.AIStatus = initial(H.AIStatus)
+	timestopped = FALSE
 
 /obj/effect/timestop/wizard
 	duration = 100
@@ -519,6 +526,14 @@
 /obj/effect/timestop/wizard/New()
 	..()
 	timestop()
+
+/obj/effect/timestop/timeagent
+
+/obj/effect/timestop/timeagent/New(loc, user, _duration)
+	..()
+	duration = _duration
+	immune += user
+
 
 /obj/item/stack/tile/bluespace
 	name = "bluespace floor tile"

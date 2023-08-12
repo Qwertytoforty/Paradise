@@ -297,3 +297,23 @@
 	// In the event that the object doesn't have an overriden version of this proc to do it, log a runtime so one can be added.
 	CRASH("Proc force_eject_occupant() is not overridden on a machine containing a mob.")
 
+/obj/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"obj_integrity",
+		"sharp")
+
+	reset_vars_after_duration(resettable_vars, duration)
+
+/obj/actual_send_to_future(duration)
+	var/turf/current_turf = get_turf(src)
+	var/datum/current_loc = loc
+	forceMove(null) // pardon?
+
+	..()
+
+	if(current_loc)
+		forceMove(current_loc)
+	else
+		forceMove(current_turf)
+

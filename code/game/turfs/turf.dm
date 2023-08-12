@@ -513,6 +513,13 @@
 /turf/AllowDrop()
 	return TRUE
 
+/turf/send_to_past(var/duration)
+	var/current_type = type
+	being_sent_to_past = TRUE
+	spawn(duration)
+		being_sent_to_past = FALSE
+		ChangeTurf(current_type)
+
 /**
  * Returns adjacent turfs to this turf that are reachable, in all cardinal directions
  *

@@ -299,3 +299,10 @@
 
 
 #undef MAX_WEIGHT_CLASS
+
+/obj/item/reagent_containers/food/snacks/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"bitecount")
+
+	reset_vars_after_duration(resettable_vars, duration)

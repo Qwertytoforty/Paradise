@@ -109,6 +109,9 @@ GLOBAL_LIST_EMPTY(channel_to_radio_key)
 
 
 /mob/living/say(message, verb = "says", sanitize = TRUE, ignore_speech_problems = FALSE, ignore_atmospherics = FALSE, ignore_languages = FALSE)
+	if(timestopped)
+		to_chat(src, "<span class='danger'>You cannot speak as you are frozen in time!</span>")
+		return
 	if(client)
 		if(check_mute(client.ckey, MUTE_IC))
 			to_chat(src, "<span class='danger'>You cannot speak in IC (Muted).</span>")

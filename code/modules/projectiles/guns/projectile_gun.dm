@@ -234,3 +234,12 @@
 		if(AC.BB)
 			process_fire(user, user,0)
 			. = 1
+
+
+/obj/item/gun/projectile/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"chambered",
+		"magazine")
+
+	reset_vars_after_duration(resettable_vars, duration)

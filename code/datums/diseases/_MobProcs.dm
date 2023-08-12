@@ -163,3 +163,60 @@
 	if(. == -1)
 		if(D.viable_mobtypes.Find(/mob/living/carbon/human))
 			return 1 //this is stupid as fuck but because monkeys are only half the time actually subtypes of humans they need this
+
+
+/mob/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"lastattacker",
+		"attack_log", //jesus h christ no
+		"memory",
+		"sdisabilities",
+		"disabilities",
+		"eye_blind",
+		"eye_blurry",
+		"ear_deaf",
+		"ear_damage",
+		"stuttering",
+		"slurring",
+		"real_name",
+		"blinded",
+		"bhunger",
+		"druggy",
+		"confused",
+		"sleeping",
+		"resting",
+		"lying",
+		"lying_prev",
+		"canmove",
+		"candrop",
+		"cpr_time",
+		"bodytemperature",
+		"drowsyness",
+		"dizziness",
+		"jitteriness",
+		"nutrition",
+		"overeatduration",
+		"paralysis", ///fucking status effects
+		"stunned",
+		"knockdown",
+		"losebreath",
+		"nobreath",
+		"held_items",
+		"back",
+		"internal",
+		"s_active",
+		"wear_mask",
+		"radiation",
+		"stat",
+		"monkeyizing",
+		"key") //pain
+
+	reset_vars_after_duration(resettable_vars, duration)
+
+	spawn(duration - 1)
+		for(var/atom/movable/AM in contents)
+			drop_item(AM, force_drop = 1)
+
+	spawn(duration + 1)
+		regenerate_icons()

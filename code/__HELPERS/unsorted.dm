@@ -1423,6 +1423,9 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 	simulated = 0
 	see_in_dark = 1e6
 
+/mob/dview/send_to_future(var/duration)
+	return
+
 /mob/dview/New() //For whatever reason, if this isn't called, then BYOND will throw a type mismatch runtime when attempting to add this to the mobs list. -Fox
 	SHOULD_CALL_PARENT(FALSE)
 

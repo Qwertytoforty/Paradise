@@ -4,6 +4,8 @@
 #define POWER_RESTORATION_APC_FOUND 3
 
 /mob/living/silicon/ai/Life(seconds, times_fired)
+	if(timestopped)
+		return
 	//doesn't call parent because it's a horrible mess
 	if(stat == DEAD)
 		return

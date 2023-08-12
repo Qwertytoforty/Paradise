@@ -41,6 +41,8 @@
 #define SPECIAL_ROLE_SUPER "Super"
 #define SPECIAL_ROLE_SYNDICATE_DEATHSQUAD "Syndicate Commando"
 #define SPECIAL_ROLE_TRAITOR "Traitor"
+#define SPECIAL_ROLE_TIME_AGENT "Time Agent"
+#define SPECIAL_ROLE_TIME_AGENT_TWIN "Time Agent TWIN"
 #define SPECIAL_ROLE_VAMPIRE "Vampire"
 #define SPECIAL_ROLE_VAMPIRE_THRALL "Vampire Thrall"
 #define SPECIAL_ROLE_WIZARD "Wizard"

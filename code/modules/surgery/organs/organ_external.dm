@@ -892,3 +892,25 @@ Note that amputating the affected organ does in fact remove the infection from t
 		var/obj/item/organ/external/L = X
 		for(var/obj/item/I in L.embedded_objects)
 			return 1
+
+/datum/organ/external/send_to_past(var/duration)
+	..()
+	var/static/list/resettable_vars = list(
+		"damage_state",
+		"brute_dam",
+		"burn_dam",
+		"last_dam",
+		"wounds",
+		"number_wounds",
+		"perma_injury",
+		"parent",
+		"children",
+		"internal_organs",
+		"open",
+		"stage",
+		"cavity",
+		"sabotaged",
+		"encased",
+		"implants")
+
+	reset_vars_after_duration(resettable_vars, duration)

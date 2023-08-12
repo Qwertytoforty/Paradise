@@ -303,3 +303,14 @@ I use this so that this can be made better once the organ overhaul rolls out -- 
 			robotize()
 		status = data["status"]
 	..()
+
+
+
+/datum/organ/send_to_past(var/duration)
+	var/static/list/resettable_vars = list(
+		"owner",
+		"status",
+		"autopsy_data",
+		"germ_level")
+
+	reset_vars_after_duration(resettable_vars, duration, TRUE)
