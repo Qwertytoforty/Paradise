@@ -989,8 +989,8 @@
 	appearance_flags = PIXEL_SCALE|LONG_GLIDE // no tile bound so you can see it around corners and so
 	icon = 'icons/effects/light_352.dmi'
 	icon_state = "light"
-	pixel_x = -176
-	pixel_y = -176
+	pixel_x = -160 //352 (352 by 352 file) / 2 = 176. Removes 16 (half of 32 by 32 for the sprite it is tied to) more to get 160, and it fits perfectly centered.
+	pixel_y = -160
 
 /obj/machinery/atmospherics/supermatter_crystal/engine
 	is_main_engine = TRUE
