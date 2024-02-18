@@ -12,6 +12,8 @@
 	pixel_y = -32
 	opacity = TRUE
 	anchored = FALSE
+	layer = SMOKE_LAYER
+	plane = SMOKE_PLANE
 	var/steps = 0
 	var/lifetime = 5
 	var/direction

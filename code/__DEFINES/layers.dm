@@ -82,6 +82,8 @@
 #define LARGE_MOB_LAYER 4.4
 #define ABOVE_ALL_MOB_LAYER 4.5
 
+#define SMOKE_LAYER 4.7
+
 #define SPACEVINE_LAYER 4.8
 #define SPACEVINE_MOB_LAYER 4.9
 //#define FLY_LAYER 5 //For easy recordkeeping; this is a byond define
@@ -94,6 +96,7 @@
 #define HIGH_LANDMARK_LAYER 9.2
 #define AREA_LAYER 10
 #define MASSIVE_OBJ_LAYER 11
+#define SMOKE_PLANE 11
 #define POINT_LAYER 12
 
 #define CHAT_LAYER 12.0001 // Do not insert layers between these two values
