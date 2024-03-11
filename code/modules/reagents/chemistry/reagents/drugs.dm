@@ -851,11 +851,21 @@
 
 	var/atom/movable/plane_master_controller/game_plane_master_controller = L.hud_used?.plane_master_controllers[PLANE_MASTERS_GAME]
 
-	var/static/list/col_filter_green = list(0.5,0,0,0, 0,1,0,0, 0,0,0.5,0, 0,0,0,1)
+	var/static/list/col_filter_green = list(0.66,0,0,0, 0,1,0,0, 0,0,0.66,0, 0,0,0,1)
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
-
-	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 1, list("type" = "radial_blur", "size" = 0.1))
+	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
+		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		var/list/wave_list = list()
+		wave_list += wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS)
+		wave_list += wave_filter(240, 240, 3, 99, WAVE_SIDEWAYS)
+		var/start = length(filter)
+		filter += wave_list
+		for(var/i in 1 to length(wave_list))
+			var/f = filter[start + i + 10]
+			animate(f, offset = f:offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+			animate(offset = f:offset - 1, time = 4 SECONDS)
 
 	if(!ischangeling(L) || HAS_TRAIT(L, TRAIT_MEPHEDRONE_ADAPTED))
 		return
@@ -910,7 +920,8 @@
 	var/atom/movable/plane_master_controller/game_plane_master_controller = L.hud_used?.plane_master_controllers[PLANE_MASTERS_GAME]
 
 	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_FILTER)
-	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_BLUR)
+	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
+		animate(filter, loop = 1, size = 0, time = 2 SECONDS, easing = ELASTIC_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
 
 
 /// Leaves an afterimage behind the mob when they move
@@ -948,7 +959,7 @@
 	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_FILTER)
 	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_BLUR)
 
-	var/static/list/col_filter_green = list(0.5,0,0,0, 0,1,0,0, 0,0,0.5,0, 0,0,0,1)
+	var/static/list/col_filter_green = list(0.66,0,0,0, 0,1,0,0, 0,0,0.66,0, 0,0,0,1)
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
 
@@ -1025,7 +1036,7 @@
 
 	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_BLUR)
 
-	var/static/list/col_filter_green = list(0.5,0,0,0, 0,1,0,0, 0,0,0.5,0, 0,0,0,1)
+	var/static/list/col_filter_green = list(0.66,0,0,0, 0,1,0,0, 0,0,0.66,0, 0,0,0,1)
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
 
