@@ -855,17 +855,18 @@
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	var/list/wave_list = list()
+	wave_list += wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS)
+	wave_list += wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS)
+
 	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
 		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
-		var/list/wave_list = list()
-		wave_list += wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS)
-		wave_list += wave_filter(240, 240, 3, 99, WAVE_SIDEWAYS)
-		var/start = length(filter)
-		filter += wave_list
 		for(var/i in 1 to length(wave_list))
-			var/f = filter[start + i + 10]
-			animate(f, offset = f:offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
-			animate(offset = f:offset - 1, time = 4 SECONDS)
+			var/wave = wave_list[i]
+			var/wave_offset = wave["offset"]
+			if(!isnull(wave_offset))
+				animate(filter, offset = wave, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+				animate(offset = wave - 1, time = rand() * 20 + 10)
 
 	if(!ischangeling(L) || HAS_TRAIT(L, TRAIT_MEPHEDRONE_ADAPTED))
 		return
