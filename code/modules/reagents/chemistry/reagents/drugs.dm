@@ -856,17 +856,20 @@
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
 	var/list/wave_list = list()
-	wave_list += wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS)
-	wave_list += wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS)
+	wave_list += list(wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	wave_list += list(wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS))
+	var/atom/movable/plane_master_controller/pm_controller = L.hud_used.plane_master_controllers[PLANE_MASTERS_GAME]
 
 	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
 		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
-		for(var/i in 1 to length(wave_list))
-			var/wave = wave_list[i]
-			var/wave_offset = wave["offset"]
-			if(!isnull(wave_offset))
-				animate(filter, offset = wave, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
-				animate(offset = wave - 1, time = rand() * 20 + 10)
+		for(var/key in pm_controller.controlled_planes)
+			for(var/i in 1 to length(wave_list))
+				var/wave_offset = wave_list[i]["offset"]
+				animate(filter, offset = wave_offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+				animate(offset = wave_offset - 1, time = rand() * 20 + 10)
+
+
+
 
 	if(!ischangeling(L) || HAS_TRAIT(L, TRAIT_MEPHEDRONE_ADAPTED))
 		return
@@ -921,8 +924,17 @@
 	var/atom/movable/plane_master_controller/game_plane_master_controller = L.hud_used?.plane_master_controllers[PLANE_MASTERS_GAME]
 
 	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_FILTER)
+	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	var/list/wave_list = list()
+	wave_list += list(wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	wave_list += list(wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS))
+
 	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
-		animate(filter, loop = 1, size = 0, time = 2 SECONDS, easing = ELASTIC_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		for(var/i in 1 to length(wave_list))
+			var/wave_offset = wave_list[i]["offset"]
+			animate(filter, offset = wave_offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+			animate(offset = wave_offset - 1, time = rand() * 20 + 10)
 
 
 /// Leaves an afterimage behind the mob when they move
@@ -957,14 +969,20 @@
 /// This part of the anticheese sets up the basic visual effects normally setup when the reagent gets into your system.
 /datum/reagent/mephedrone/proc/no_hud_cheese_2(mob/living/carbon/L) //Basically if you change the UI you would remove the visuals. This fixes that.
 	var/atom/movable/plane_master_controller/game_plane_master_controller = L.hud_used?.plane_master_controllers[PLANE_MASTERS_GAME]
-	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_FILTER)
-	game_plane_master_controller.remove_filter(MEPHEDRONE_SCREEN_BLUR)
-
 	var/static/list/col_filter_green = list(0.66,0,0,0, 0,1,0,0, 0,0,0.66,0, 0,0,0,1)
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
+	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	var/list/wave_list = list()
+	wave_list += list(wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	wave_list += list(wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS))
 
-	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 1, list("type" = "radial_blur", "size" = 0.1))
+	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
+		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		for(var/i in 1 to length(wave_list))
+			var/wave_offset = wave_list[i]["offset"]
+			animate(filter, offset = wave_offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+			animate(offset = wave_offset - 1, time = rand() * 20 + 10)
 
 	var/overdosed = (id in L.reagents.overdose_list())
 	if(overdosed)
@@ -1040,8 +1058,17 @@
 	var/static/list/col_filter_green = list(0.66,0,0,0, 0,1,0,0, 0,0,0.66,0, 0,0,0,1)
 
 	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_FILTER, 10, color_matrix_filter(col_filter_green, FILTER_COLOR_RGB))
+	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 10, wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	var/list/wave_list = list()
+	wave_list += list(wave_filter(240, 240, 3, 0, WAVE_SIDEWAYS))
+	wave_list += list(wave_filter(240, 240, 3, 2, WAVE_SIDEWAYS))
 
-	game_plane_master_controller.add_filter(MEPHEDRONE_SCREEN_BLUR, 1, list("type" = "radial_blur", "size" = 0.1))
+	for(var/filter in game_plane_master_controller.get_filters(MEPHEDRONE_SCREEN_BLUR))
+		//animate(filter, loop = -1, time = 1 SECONDS, easing = CIRCULAR_EASING|EASE_OUT, flags = ANIMATION_PARALLEL)
+		for(var/i in 1 to length(wave_list))
+			var/wave_offset = wave_list[i]["offset"]
+			animate(filter, offset = wave_offset, time = 0, loop = -1, flags = ANIMATION_PARALLEL)
+			animate(offset = wave_offset - 1, time = rand() * 20 + 10)
 
 
 /datum/reagent/mephedrone/overdose_process(mob/living/carbon/L)
